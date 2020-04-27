@@ -35,7 +35,7 @@ if [ "$#" -eq 2 ]; then
   sudo -E env LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
     numactl --cpunodebind=$numa_node --membind=$numa_node \
     ./build/$autorun_app $(cat apps/$autorun_app/config) \
-    --process_id 0 --numa_node $numa_node
+    --process_id $epid --numa_node $numa_node
 fi
 
 # GDB mode
