@@ -10,7 +10,7 @@ extern "C" {
 #include <raft/raft.h>
 }
 
-#include <libpmem.h>
+/* #include <libpmem.h> */
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +29,7 @@ extern "C" {
 static constexpr bool kUsePmem = false;
 
 // We have only 3 pmem machines, so client runs on the third server machine
-static constexpr bool kColocateClientWithLastServer = kUsePmem;
+static constexpr bool kColocateClientWithLastServer = true /* kUsePmem */;
 
 // We sometimes run a server and client on the same server
 static constexpr size_t kAppServerRpcId = 2;  // Rpc ID of all Raft servers

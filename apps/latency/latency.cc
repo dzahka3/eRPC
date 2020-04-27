@@ -160,7 +160,8 @@ void client_func(erpc::Nexus *nexus) {
 int main(int argc, char **argv) {
   signal(SIGINT, ctrl_c_handler);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-
+  std::cout << "FLAGS_numa_node " << FLAGS_numa_node << std::endl;
+  std::cout << "FLAGS_process_id " << FLAGS_process_id << std::endl;
   erpc::rt_assert(FLAGS_numa_node <= 1, "Invalid NUMA node");
 
   erpc::Nexus nexus(erpc::get_uri_for_process(FLAGS_process_id),

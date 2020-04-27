@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "common.h"
+#include <iostream>
 
 namespace erpc {
 
@@ -20,12 +21,14 @@ static std::vector<std::string> split(std::string input, char delimiter) {
 // Return the nth line from a file
 static std::string get_line_n(std::string filename, size_t n) {
   std::ifstream in(filename.c_str());
-
+  erpc::rt_assert(!in.fail(), "bad open");
+  
   std::string s;
   s.reserve(100);  // For performance
 
   for (size_t i = 0; i < n; i++) {
     std::getline(in, s);
+    std::cout << s << std::endl;
     erpc::rt_assert(!s.empty(), "Insufficient lines in " + filename);
   }
 
@@ -77,7 +80,7 @@ static uint16_t extract_udp_port_from_uri(std::string uri) {
 /// processes file. The autorun process file is formatted like so:
 /// <DNS name> <UDP port> <NUMA>
 static std::string get_hostname_for_process(size_t process_i) {
-  std::string process_file = "../eRPC/scripts/autorun_process_file";
+  std::string process_file = "/nethome/dzahka3/eRPC/scripts/autorun_process_file";
   std::string line = get_line_n(process_file, process_i);
   rt_assert(is_valid_process_line(line), "Invalid process line " + line);
 
@@ -89,7 +92,7 @@ static std::string get_hostname_for_process(size_t process_i) {
 /// processes file. The autorun process file is formatted like so:
 /// <DNS name> <UDP port> <NUMA>
 static std::string get_udp_port_for_process(size_t process_i) {
-  std::string process_file = "../eRPC/scripts/autorun_process_file";
+  std::string process_file = "/nethome/dzahka3/eRPC/scripts/autorun_process_file";
   std::string line = get_line_n(process_file, process_i);
 
   std::vector<std::string> split_vec = split(line, ' ');
@@ -98,6 +101,7 @@ static std::string get_udp_port_for_process(size_t process_i) {
 
 /// Return the URI of the process with index process_i
 static std::string get_uri_for_process(size_t process_i) {
+  std::cout << "getting uri for proc " << process_i << std::endl;
   std::string hostname = erpc::get_hostname_for_process(process_i);
   std::string udp_port_str = erpc::get_udp_port_for_process(process_i);
   return hostname + ":" + udp_port_str;

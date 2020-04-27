@@ -52,14 +52,14 @@ class PmemLog {
 
   PmemLog(double freq_ghz) : freq_ghz(freq_ghz) {
     int is_pmem;
-    v.buf = reinterpret_cast<uint8_t *>(
-        pmem_map_file(kPmemLogFileA, 0 /* length */, 0 /* flags */, 0666,
-                      &v.mapped_len, &is_pmem));
+    /* v.buf = reinterpret_cast<uint8_t *>( */
+    /*     pmem_map_file(kPmemLogFileA, 0 /\* length *\/, 0 /\* flags *\/, 0666, */
+    /*                   &v.mapped_len, &is_pmem)); */
 
     if (v.buf == nullptr) {
-      v.buf = reinterpret_cast<uint8_t *>(
-          pmem_map_file(kPmemLogFileB, 0 /* length */, 0 /* flags */, 0666,
-                        &v.mapped_len, &is_pmem));
+      /* v.buf = reinterpret_cast<uint8_t *>( */
+      /*     pmem_map_file(kPmemLogFileB, 0 /\* length *\/, 0 /\* flags *\/, 0666, */
+      /*                   &v.mapped_len, &is_pmem)); */
     }
 
     erpc::rt_assert(v.buf != nullptr,
@@ -77,7 +77,7 @@ class PmemLog {
     cur += sizeof(raft_node_id_t);
     p.num_entries = reinterpret_cast<size_t *>(cur);
     cur += sizeof(size_t);
-    pmem_memset_persist(v.buf, 0, static_cast<size_t>(cur - v.buf));
+    /* pmem_memset_persist(v.buf, 0, static_cast<size_t>(cur - v.buf)); */
 
     v.log_entries_base = reinterpret_cast<T *>(cur);
 
@@ -89,7 +89,7 @@ class PmemLog {
   // Truncate the log so that the new size is \p num_entries
   void truncate(size_t num_entries) {
     v.num_entries = num_entries;
-    pmem_memcpy_persist(p.num_entries, &v.num_entries, sizeof(v.num_entries));
+    /* pmem_memcpy_persist(p.num_entries, &v.num_entries, sizeof(v.num_entries)); */
   }
 
   void pop() { truncate(v.num_entries - 1); }
@@ -97,17 +97,17 @@ class PmemLog {
   void append(const T &entry) {
     // First, update data
     T *p_log_entry_ptr = &v.log_entries_base[v.num_entries];
-    pmem_memcpy_persist(p_log_entry_ptr, &entry, sizeof(T));
+    /* pmem_memcpy_persist(p_log_entry_ptr, &entry, sizeof(T)); */
 
     // Second, update tail
     v.num_entries++;
-    pmem_memcpy_persist(p.num_entries, &v.num_entries, sizeof(v.num_entries));
+    /* pmem_memcpy_persist(p.num_entries, &v.num_entries, sizeof(v.num_entries)); */
   }
 
   size_t get_num_entries() const { return v.num_entries; }
 
   void persist_vote(raft_node_id_t voted_for) {
-    pmem_memcpy_persist(p.voted_for, &voted_for, sizeof(voted_for));
+    /* pmem_memcpy_persist(p.voted_for, &voted_for, sizeof(voted_for)); */
   }
 
   void persist_term(raft_term_t term, raft_node_id_t voted_for) {
@@ -119,6 +119,6 @@ class PmemLog {
     uint32_t to_persist[2];
     to_persist[0] = term;
     to_persist[1] = static_cast<uint32_t>(voted_for);
-    pmem_memcpy_persist(p.term, &to_persist, sizeof(size_t));
+    /* pmem_memcpy_persist(p.term, &to_persist, sizeof(size_t)); */
   }
 };
