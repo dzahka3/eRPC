@@ -13,6 +13,9 @@ int main(int argc, char **argv) {
   erpc::Nexus nexus(erpc::get_uri_for_process(FLAGS_process_id),
                     FLAGS_numa_node, 0);
 
+  erpc::Nexus nexus2(erpc::get_uri_for_process(FLAGS_process_id + 1),
+                    FLAGS_numa_node, 0);
+
   for (size_t i = 0; i < FLAGS_num_raft_servers; i++) {
     node_id_to_name_map[get_raft_node_id_for_process(i)] =
         erpc::trim_hostname(erpc::get_uri_for_process(i));
@@ -32,7 +35,7 @@ int main(int argc, char **argv) {
     // Run two threads on the last server because I have only three machines
     if (FLAGS_process_id == FLAGS_num_raft_servers - 1) {
       auto server_thread = std::thread(server_func, &nexus, &server_context);
-      auto client_thread = std::thread(client_func, &nexus, &client_context);
+      auto client_thread = std::thread(client_func, &nexus2, &client_context);
 
       erpc::bind_to_core(server_thread, FLAGS_numa_node, 0);
       erpc::bind_to_core(client_thread, FLAGS_numa_node, 1);
